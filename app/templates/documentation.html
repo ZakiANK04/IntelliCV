@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation - IntelliCV{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <div class="flex justify-center mb-4">
+            <img src="{{ url_for('static', filename='logo.svg') }}" alt="IntelliCV" class="w-16 h-16 transform hover:rotate-12 transition-transform">
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            <i class="fas fa-book mr-3 text-purple-600 dark:text-purple-400"></i>IntelliCV Documentation
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400">
+            Technical documentation for the IntelliCV NLP-Powered Resume Intelligence Platform
+        </p>
+    </div>
+    
+    <!-- Table of Contents -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 border border-transparent dark:border-slate-800">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Table of Contents</h2>
+        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <li><a href="#overview" class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"><i class="fas fa-chevron-right text-xs mr-2 opacity-50"></i>1. Project Overview</a></li>
+            <li><a href="#architecture" class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"><i class="fas fa-chevron-right text-xs mr-2 opacity-50"></i>2. System Architecture</a></li>
+            <li><a href="#nlp-pipeline" class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"><i class="fas fa-chevron-right text-xs mr-2 opacity-50"></i>3. NLP Pipeline</a></li>
+            <li><a href="#scoring" class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"><i class="fas fa-chevron-right text-xs mr-2 opacity-50"></i>4. Scoring System</a></li>
+            <li><a href="#libraries" class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"><i class="fas fa-chevron-right text-xs mr-2 opacity-50"></i>5. Libraries & Technologies</a></li>
+            <li><a href="#database" class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"><i class="fas fa-chevron-right text-xs mr-2 opacity-50"></i>6. Database Schema</a></li>
+            <li><a href="#ethics" class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"><i class="fas fa-chevron-right text-xs mr-2 opacity-50"></i>7. Ethical Considerations</a></li>
+            <li><a href="#limitations" class="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 flex items-center"><i class="fas fa-chevron-right text-xs mr-2 opacity-50"></i>8. Limitations</a></li>
+        </ul>
+    </div>
+    
+    <!-- Section 1: Overview -->
+    <div id="overview" class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 border border-transparent dark:border-slate-800">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            <span class="text-purple-600 dark:text-purple-400">1.</span> Project Overview
+        </h2>
+        
+        <p class="text-gray-700 dark:text-gray-300 mb-4">
+            <strong class="text-purple-600 dark:text-purple-400">IntelliCV</strong> is a Python-based NLP-powered resume intelligence platform designed to analyze CVs using 
+            advanced Natural Language Processing techniques. The system extracts text from PDF files, 
+            identifies key sections, detects skills and entities, and provides a comprehensive 
+            evaluation with actionable recommendations.
+        </p>
+        
+        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">Purpose</h3>
+        <ul class="list-disc list-inside text-gray-700 space-y-2">
+            <li>Provide automated CV analysis for students and job seekers</li>
+            <li>Demonstrate NLP and AI-assisted analysis techniques</li>
+            <li>Serve as a foundation for future ATS-style tools</li>
+            <li>Educational project showcasing system design principles</li>
+        </ul>
+        
+        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">Key Features</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                <span>Accurate PDF text extraction</span>
+            </div>
+            <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                <span>NLP-based section detection</span>
+            </div>
+            <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                <span>Named Entity Recognition</span>
+            </div>
+            <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                <span>Skill extraction & categorization</span>
+            </div>
+            <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                <span>Explainable scoring system</span>
+            </div>
+            <div class="flex items-start">
+                <i class="fas fa-check-circle text-green-500 mr-3 mt-1"></i>
+                <span>Personalized recommendations</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section 2: Architecture -->
+    <div id="architecture" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <span class="text-purple-600">2.</span> System Architecture
+        </h2>
+        
+        <!-- Architecture Diagram -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-6">
+            <div class="flex flex-col items-center">
+                <!-- Frontend -->
+                <div class="w-full max-w-md bg-blue-100 rounded-lg p-4 text-center mb-4">
+                    <h4 class="font-bold text-blue-800">Frontend Layer</h4>
+                    <p class="text-sm text-blue-600">HTML/CSS/JS • Tailwind CSS • PDF.js</p>
+                </div>
+                
+                <i class="fas fa-arrow-down text-gray-400 text-2xl my-2"></i>
+                
+                <!-- Backend -->
+                <div class="w-full max-w-md bg-purple-100 rounded-lg p-4 text-center mb-4">
+                    <h4 class="font-bold text-purple-800">Flask Backend</h4>
+                    <p class="text-sm text-purple-600">Routes • API • Services</p>
+                </div>
+                
+                <div class="flex w-full max-w-lg justify-between mb-4">
+                    <i class="fas fa-arrow-down text-gray-400 text-2xl"></i>
+                    <i class="fas fa-arrow-down text-gray-400 text-2xl"></i>
+                </div>
+                
+                <!-- Processing -->
+                <div class="grid grid-cols-2 gap-4 w-full max-w-lg mb-4">
+                    <div class="bg-green-100 rounded-lg p-4 text-center">
+                        <h4 class="font-bold text-green-800">PDF Extractor</h4>
+                        <p class="text-sm text-green-600">pdfplumber • PyMuPDF</p>
+                    </div>
+                    <div class="bg-yellow-100 rounded-lg p-4 text-center">
+                        <h4 class="font-bold text-yellow-800">NLP Analyzer</h4>
+                        <p class="text-sm text-yellow-600">spaCy • Transformers</p>
+                    </div>
+                </div>
+                
+                <i class="fas fa-arrow-down text-gray-400 text-2xl my-2"></i>
+                
+                <!-- Database -->
+                <div class="w-full max-w-md bg-red-100 rounded-lg p-4 text-center">
+                    <h4 class="font-bold text-red-800">MySQL Database</h4>
+                    <p class="text-sm text-red-600">SQLAlchemy ORM</p>
+                </div>
+            </div>
+        </div>
+        
+        <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-3">Component Description</h3>
+        <div class="space-y-4">
+            <div>
+                <h4 class="font-medium text-gray-900">Frontend Layer</h4>
+                <p class="text-gray-600">Handles user interface, file uploads, PDF preview using PDF.js, and animated feedback during processing.</p>
+            </div>
+            <div>
+                <h4 class="font-medium text-gray-900">Flask Backend</h4>
+                <p class="text-gray-600">REST API endpoints for user submission, CV upload, analysis retrieval, and admin operations.</p>
+            </div>
+            <div>
+                <h4 class="font-medium text-gray-900">PDF Extractor</h4>
+                <p class="text-gray-600">Dual-method extraction (pdfplumber primary, PyMuPDF fallback) with Unicode normalization.</p>
+            </div>
+            <div>
+                <h4 class="font-medium text-gray-900">NLP Analyzer</h4>
+                <p class="text-gray-600">spaCy-powered NER, regex pattern matching for sections, semantic similarity for classification.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section 3: NLP Pipeline -->
+    <div id="nlp-pipeline" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <span class="text-purple-600">3.</span> NLP Pipeline
+        </h2>
+        
+        <p class="text-gray-700 mb-6">
+            The NLP pipeline processes extracted CV text through multiple stages to identify 
+            structure, entities, and content quality.
+        </p>
+        
+        <!-- Pipeline Steps -->
+        <div class="space-y-4">
+            <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Text Preprocessing</h4>
+                    <p class="text-gray-600">Unicode normalization (NFC), character cleanup, line reconstruction, sentence segmentation.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Section Detection</h4>
+                    <p class="text-gray-600">Regex pattern matching for section headers combined with content-based heuristics for 9 CV sections.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Named Entity Recognition</h4>
+                    <p class="text-gray-600">spaCy's NER model identifies PERSON, ORG, GPE, DATE entities. Custom regex extracts emails and phone numbers.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Skill Extraction</h4>
+                    <p class="text-gray-600">Pattern matching against a comprehensive skills database covering programming languages, frameworks, databases, cloud/DevOps, data science, and soft skills.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold mr-4 flex-shrink-0">5</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Career Field Detection</h4>
+                    <p class="text-gray-600">Keyword frequency analysis across 13 career fields with skill correlation scoring.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold mr-4 flex-shrink-0">6</div>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Experience Level Classification</h4>
+                    <p class="text-gray-600">Keyword matching and year range extraction to classify: Fresher, Junior, Mid-Level, Senior.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section 4: Scoring System -->
+    <div id="scoring" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <span class="text-purple-600">4.</span> Scoring System
+        </h2>
+        
+        <p class="text-gray-700 mb-6">
+            The scoring system provides transparent, explainable results across five weighted categories.
+        </p>
+        
+        <table class="w-full mb-6 border-collapse">
+            <thead>
+                <tr class="bg-gray-50 dark:bg-slate-800/50">
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900 dark:text-white border-b dark:border-slate-700">Category</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900 dark:text-white border-b dark:border-slate-700">Weight</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900 dark:text-white border-b dark:border-slate-700">Factors</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 dark:divide-slate-800">
+                <tr>
+                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">Experience Level</td>
+                    <td class="px-4 py-3 text-gray-700 dark:text-gray-400">25%</td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">Detected level + work experience quality</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">Skills Relevance</td>
+                    <td class="px-4 py-3 text-gray-700 dark:text-gray-400">25%</td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">Skill count + category diversity</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">CV Structure</td>
+                    <td class="px-4 py-3 text-gray-700 dark:text-gray-400">20%</td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">Sections detected + section quality</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">Career Alignment</td>
+                    <td class="px-4 py-3 text-gray-700 dark:text-gray-400">15%</td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">Field detection + skill-field match</td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-200">Readability</td>
+                    <td class="px-4 py-3 text-gray-700 dark:text-gray-400">15%</td>
+                    <td class="px-4 py-3 text-gray-600 dark:text-gray-400">Word count + bullet point usage</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-100 dark:border-blue-900/30">
+            <h4 class="font-semibold text-blue-900 dark:text-blue-300 mb-2">
+                <i class="fas fa-info-circle mr-2"></i>Explainable AI
+            </h4>
+            <p class="text-blue-800 dark:text-blue-400">
+                Every score comes with detailed explanations. The system avoids "black box" scoring 
+                by providing clear reasoning for each rating, helping users understand exactly 
+                how to improve their CVs.
+            </p>
+        </div>
+    </div>
+    
+    <!-- Section 5: Libraries -->
+    <div id="libraries" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <span class="text-purple-600">5.</span> Libraries & Technologies
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">Backend</h3>
+                <ul class="space-y-2 text-gray-700">
+                    <li><strong>Flask</strong> - Web framework</li>
+                    <li><strong>SQLAlchemy</strong> - Database ORM</li>
+                    <li><strong>Flask-Login</strong> - Authentication</li>
+                    <li><strong>PyMySQL</strong> - MySQL connector</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">NLP & AI</h3>
+                <ul class="space-y-2 text-gray-700">
+                    <li><strong>spaCy</strong> - Core NLP pipeline</li>
+                    <li><strong>Transformers</strong> - Deep learning models</li>
+                    <li><strong>Sentence-Transformers</strong> - Embeddings</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">PDF Processing</h3>
+                <ul class="space-y-2 text-gray-700">
+                    <li><strong>pdfplumber</strong> - Primary extractor</li>
+                    <li><strong>PyMuPDF</strong> - Fallback extractor</li>
+                    <li><strong>ftfy</strong> - Text fixing</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h3 class="font-semibold text-gray-900 mb-3">Frontend</h3>
+                <ul class="space-y-2 text-gray-700">
+                    <li><strong>Tailwind CSS</strong> - Styling</li>
+                    <li><strong>PDF.js</strong> - PDF preview</li>
+                    <li><strong>Chart.js</strong> - Visualizations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section 6: Database -->
+    <div id="database" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <span class="text-purple-600">6.</span> Database Schema
+        </h2>
+        
+        <div class="space-y-6">
+            <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                    <i class="fas fa-table mr-2 text-blue-500"></i>users
+                </h3>
+                <div class="bg-gray-50 dark:bg-slate-800 rounded-xl p-6 font-mono text-sm text-gray-700 dark:text-gray-300 border dark:border-slate-700 shadow-inner">
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">id</span> <span class="text-gray-400">// PK, AUTO_INCREMENT</span></div>
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">full_name</span> <span class="text-gray-400">// VARCHAR 255</span></div>
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">email</span> <span class="text-gray-400">// VARCHAR 255, INDEX</span></div>
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">phone</span> <span class="text-gray-400">// VARCHAR 50</span></div>
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">created_at</span> <span class="text-gray-400">// DATETIME</span></div>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                    <i class="fas fa-table mr-2 text-purple-500"></i>cv_analysis
+                </h3>
+                <div class="bg-gray-50 dark:bg-slate-800 rounded-xl p-6 font-mono text-sm text-gray-700 dark:text-gray-300 border dark:border-slate-700 shadow-inner">
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">id</span> <span class="text-gray-400">// PK, AUTO_INCREMENT</span></div>
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">user_id</span> <span class="text-gray-400">// FK -> users.id</span></div>
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">filename</span> <span class="text-gray-400">// VARCHAR</span></div>
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">scores</span> <span class="text-gray-400">// FLOAT values</span></div>
+                    <div class="flex"><span class="w-24 text-purple-600 dark:text-purple-400">data</span> <span class="text-gray-400">// JSON blobs</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section 7: Ethics -->
+    <div id="ethics" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <span class="text-purple-600">7.</span> Ethical Considerations
+        </h2>
+        
+        <div class="space-y-4">
+            <div class="flex items-start">
+                <i class="fas fa-shield-alt text-green-500 mr-3 mt-1"></i>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Data Privacy</h4>
+                    <p class="text-gray-600">User data is stored locally and not shared with third parties. CVs are processed on-premises.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <i class="fas fa-balance-scale text-blue-500 mr-3 mt-1"></i>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Bias Awareness</h4>
+                    <p class="text-gray-600">The scoring system uses objective, transparent criteria. However, users should be aware that any AI system may have inherent biases.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <i class="fas fa-eye text-purple-500 mr-3 mt-1"></i>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Transparency</h4>
+                    <p class="text-gray-600">All scoring factors and weights are documented. Users can understand exactly how their score was calculated.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-start">
+                <i class="fas fa-user-shield text-yellow-500 mr-3 mt-1"></i>
+                <div>
+                    <h4 class="font-semibold text-gray-900">Human Oversight</h4>
+                    <p class="text-gray-600">This tool is meant to assist, not replace, human judgment in CV evaluation. Final hiring decisions should always involve human review.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section 8: Limitations -->
+    <div id="limitations" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            <span class="text-purple-600">8.</span> Limitations
+        </h2>
+        
+        <ul class="space-y-3">
+            <li class="flex items-start">
+                <i class="fas fa-exclamation-circle text-yellow-500 mr-3 mt-1"></i>
+                <span class="text-gray-700"><strong>English Only:</strong> Currently supports English language CVs only.</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-exclamation-circle text-yellow-500 mr-3 mt-1"></i>
+                <span class="text-gray-700"><strong>PDF Format:</strong> Only accepts PDF files. Other formats (DOCX, images) not supported.</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-exclamation-circle text-yellow-500 mr-3 mt-1"></i>
+                <span class="text-gray-700"><strong>Image-based PDFs:</strong> Scanned documents may not extract properly without OCR.</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-exclamation-circle text-yellow-500 mr-3 mt-1"></i>
+                <span class="text-gray-700"><strong>Complex Layouts:</strong> Highly stylized CVs with columns or graphics may have extraction issues.</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-exclamation-circle text-yellow-500 mr-3 mt-1"></i>
+                <span class="text-gray-700"><strong>Industry Coverage:</strong> Skill database may not cover all specialized industries.</span>
+            </li>
+        </ul>
+        
+        <div class="mt-6 bg-purple-50 rounded-lg p-4">
+            <h4 class="font-semibold text-purple-900 mb-2">Future Enhancements</h4>
+            <ul class="text-purple-800 space-y-1">
+                <li>• Multi-language CV support</li>
+                <li>• ATS keyword matching</li>
+                <li>• Resume rewriting suggestions</li>
+                <li>• Cloud deployment option</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

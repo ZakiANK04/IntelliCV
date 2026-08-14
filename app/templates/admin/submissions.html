@@ -1,0 +1,171 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Submissions - Admin{% endblock %}
+{% block header %}CV Submissions{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+    <form method="GET" class="flex flex-wrap gap-4 items-end">
+        <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <input type="text" name="search" value="{{ search }}"
+                   placeholder="Name, email, or career field"
+                   class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Min Score</label>
+            <input type="number" name="min_score" value="{{ min_score or '' }}" min="0" max="100"
+                   class="w-24 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Max Score</label>
+            <input type="number" name="max_score" value="{{ max_score or '' }}" min="0" max="100"
+                   class="w-24 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Experience</label>
+            <select name="experience" 
+                    class="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <option value="">All</option>
+                <option value="Fresher" {{ 'selected' if experience == 'Fresher' }}>Fresher</option>
+                <option value="Junior" {{ 'selected' if experience == 'Junior' }}>Junior</option>
+                <option value="Mid-Level" {{ 'selected' if experience == 'Mid-Level' }}>Mid-Level</option>
+                <option value="Senior" {{ 'selected' if experience == 'Senior' }}>Senior</option>
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="gradient-bg text-white px-6 py-2 rounded-lg hover:opacity-90">
+                <i class="fas fa-search mr-2"></i>Filter
+            </button>
+        </div>
+        <div>
+            <a href="{{ url_for('admin.submissions') }}" class="text-gray-600 hover:text-gray-800 px-4 py-2">
+                Reset
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Submissions Table -->
+<div class="bg-white rounded-xl shadow-sm">
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Career</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skills</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for analysis in submissions.items %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        #{{ analysis.id }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div>
+                            <div class="font-medium text-gray-900">{{ analysis.user.full_name }}</div>
+                            <div class="text-sm text-gray-500">{{ analysis.user.email }}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <span title="{{ analysis.original_filename }}">
+                            {{ analysis.original_filename[:20] }}{% if analysis.original_filename|length > 20 %}...{% endif %}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium 
+                            {% if analysis.score >= 80 %}bg-green-100 text-green-800
+                            {% elif analysis.score >= 60 %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ analysis.score|round(1) }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {{ analysis.experience_level }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {{ analysis.career_field }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {{ analysis.skills_found|length if analysis.skills_found else 0 }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ analysis.created_at.strftime('%b %d, %Y %H:%M') }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-3">
+                        <a href="{{ url_for('admin.view_submission', analysis_id=analysis.id) }}" 
+                           class="text-purple-600 hover:text-purple-800">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ url_for('main.results', analysis_id=analysis.id) }}" 
+                           target="_blank"
+                           class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <form action="{{ url_for('admin.delete_submission', analysis_id=analysis.id) }}" 
+                              method="POST" class="inline"
+                              onsubmit="return confirm('Are you sure you want to delete this submission?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                        No submissions found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if submissions.pages > 1 %}
+    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <div class="text-sm text-gray-500">
+            Showing {{ submissions.page * 20 - 19 }} to {{ submissions.page * 20 if submissions.page * 20 < submissions.total else submissions.total }} 
+            of {{ submissions.total }} results
+        </div>
+        <div class="flex space-x-2">
+            {% if submissions.has_prev %}
+            <a href="{{ url_for('admin.submissions', page=submissions.prev_num, search=search, min_score=min_score, max_score=max_score, experience=experience) }}" 
+               class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50">
+                <i class="fas fa-chevron-left"></i> Previous
+            </a>
+            {% endif %}
+            
+            {% for page_num in submissions.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    <a href="{{ url_for('admin.submissions', page=page_num, search=search, min_score=min_score, max_score=max_score, experience=experience) }}" 
+                       class="px-4 py-2 border rounded-lg {{ 'gradient-bg text-white' if page_num == submissions.page else 'text-gray-600 hover:bg-gray-50' }}">
+                        {{ page_num }}
+                    </a>
+                {% else %}
+                    <span class="px-4 py-2 text-gray-400">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if submissions.has_next %}
+            <a href="{{ url_for('admin.submissions', page=submissions.next_num, search=search, min_score=min_score, max_score=max_score, experience=experience) }}" 
+               class="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50">
+                Next <i class="fas fa-chevron-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

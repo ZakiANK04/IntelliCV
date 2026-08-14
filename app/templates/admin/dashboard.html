@@ -1,0 +1,193 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard - Admin{% endblock %}
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#111] text-white p-8" style="font-family: 'Space Grotesk', sans-serif;">
+    <!-- Command Center Header -->
+    <div class="mb-12">
+        <h1 class="text-5xl font-bold mb-2" style="font-family: 'Space Grotesk', sans-serif;">COMMAND CENTER</h1>
+        <p class="text-gray-400 text-lg">System Status • Analysis Metrics • User Activity</p>
+        <div class="w-full h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent mt-4"></div>
+    </div>
+
+    <!-- System Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div class="border-2 border-blue-500 bg-black/50 p-6 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-400 text-sm font-mono">TOTAL_USERS</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ total_users }}</p>
+                </div>
+                <div class="w-16 h-16 border-2 border-blue-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-users text-blue-400 text-2xl"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-xs text-gray-500 font-mono">ACTIVE_PROFILES</div>
+        </div>
+
+        <div class="border-2 border-green-500 bg-black/50 p-6 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-green-400 text-sm font-mono">TOTAL_ANALYSES</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ total_analyses }}</p>
+                </div>
+                <div class="w-16 h-16 border-2 border-green-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-file-pdf text-green-400 text-2xl"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-xs text-gray-500 font-mono">PROCESSED_DOCUMENTS</div>
+        </div>
+
+        <div class="border-2 border-purple-500 bg-black/50 p-6 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-400 text-sm font-mono">AVG_SCORE</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ avg_score }}</p>
+                </div>
+                <div class="w-16 h-16 border-2 border-purple-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-chart-line text-purple-400 text-2xl"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-xs text-gray-500 font-mono">PERFORMANCE_METRIC</div>
+        </div>
+
+        <div class="border-2 border-yellow-500 bg-black/50 p-6 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-500 to-orange-500"></div>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-yellow-400 text-sm font-mono">HIGH_SCORERS</p>
+                    <p class="text-4xl font-bold text-white mt-2">{{ score_ranges['80-100'] }}</p>
+                </div>
+                <div class="w-16 h-16 border-2 border-yellow-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-star text-yellow-400 text-2xl"></i>
+                </div>
+            </div>
+            <div class="mt-4 text-xs text-gray-500 font-mono">SCORE_80_PLUS</div>
+        </div>
+    </div>
+
+    <!-- Data Visualization Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <!-- Score Distribution Matrix -->
+        <div class="border-2 border-blue-500 bg-black/50 p-6">
+            <h3 class="text-xl font-bold text-white mb-6 font-mono">SCORE_DISTRIBUTION_MATRIX</h3>
+            <div class="space-y-4">
+                {% for range_name, count in score_ranges.items() %}
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-400 font-mono text-sm">{{ range_name }}</span>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-32 h-2 bg-gray-800 rounded">
+                            <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded transition-all duration-1000"
+                                 style="width: {% if total_analyses > 0 %}{{ (count / total_analyses * 100)|round(1) }}{% else %}0{% endif %}%;"></div>
+                        </div>
+                        <span class="text-white font-mono text-sm w-8 text-right">{{ count }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Experience Level Grid -->
+        <div class="border-2 border-green-500 bg-black/50 p-6">
+            <h3 class="text-xl font-bold text-white mb-6 font-mono">EXPERIENCE_LEVEL_GRID</h3>
+            <div class="grid grid-cols-2 gap-4">
+                {% for level, count in exp_distribution.items() %}
+                <div class="border border-gray-700 p-4 text-center">
+                    <div class="text-2xl font-bold text-green-400 mb-1">{{ count }}</div>
+                    <div class="text-xs text-gray-400 font-mono">{{ level|upper }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Terminal -->
+    <div class="border-2 border-gray-600 bg-black/50">
+        <div class="px-6 py-4 border-b border-gray-600 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white font-mono">RECENT_ACTIVITY_LOG</h3>
+            <a href="{{ url_for('admin.submissions') }}" class="text-blue-400 hover:text-blue-300 text-sm font-mono">
+                VIEW_ALL <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full font-mono text-sm">
+                <thead class="bg-gray-900/50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-gray-400 font-mono text-xs">USER_PROFILE</th>
+                        <th class="px-6 py-3 text-left text-gray-400 font-mono text-xs">SCORE</th>
+                        <th class="px-6 py-3 text-left text-gray-400 font-mono text-xs">EXPERIENCE</th>
+                        <th class="px-6 py-3 text-left text-gray-400 font-mono text-xs">CAREER_FIELD</th>
+                        <th class="px-6 py-3 text-left text-gray-400 font-mono text-xs">TIMESTAMP</th>
+                        <th class="px-6 py-3 text-left text-gray-400 font-mono text-xs">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for analysis in recent_analyses %}
+                    <tr class="hover:bg-gray-900/30 transition-colors">
+                        <td class="px-6 py-4">
+                            <div>
+                                <div class="text-white font-mono">{{ analysis.user.full_name }}</div>
+                                <div class="text-gray-500 text-xs">{{ analysis.user.email }}</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 border font-mono text-xs
+                                {% if analysis.score >= 80 %}border-green-500 text-green-400 bg-green-500/10
+                                {% elif analysis.score >= 60 %}border-yellow-500 text-yellow-400 bg-yellow-500/10
+                                {% else %}border-red-500 text-red-400 bg-red-500/10{% endif %}">
+                                {{ analysis.score|round(1) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-300 font-mono">
+                            {{ analysis.experience_level }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-300 font-mono">
+                            {{ analysis.career_field }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-400 font-mono text-xs">
+                            {{ analysis.created_at.strftime('%Y-%m-%d %H:%M') }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="{{ url_for('admin.view_submission', analysis_id=analysis.id) }}"
+                               class="text-blue-400 hover:text-blue-300 font-mono text-xs">
+                                [VIEW]
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-500 font-mono">
+                            NO_DATA_AVAILABLE
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Grid Background Pattern -->
+<style>
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -1;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin - IntelliCV{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white shadow-lg">
+            <div class="p-6">
+                <a href="{{ url_for('main.index') }}" class="flex items-center space-x-3">
+                    <img src="{{ url_for('static', filename='logo.svg') }}" alt="IntelliCV" class="w-10 h-10">
+                    <div class="flex flex-col">
+                        <span class="text-xl font-bold text-gray-800">IntelliCV</span>
+                        <span class="text-xs text-gray-500">Admin Panel</span>
+                    </div>
+                </a>
+            </div>
+            
+            <nav class="mt-6">
+                <a href="{{ url_for('admin.dashboard') }}" 
+                   class="sidebar-link flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 {{ 'active' if request.endpoint == 'admin.dashboard' }}">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="{{ url_for('admin.submissions') }}" 
+                   class="sidebar-link flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 {{ 'active' if 'submission' in request.endpoint }}">
+                    <i class="fas fa-file-pdf mr-3"></i>
+                    Submissions
+                </a>
+                <a href="{{ url_for('admin.users') }}" 
+                   class="sidebar-link flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 {{ 'active' if request.endpoint == 'admin.users' }}">
+                    <i class="fas fa-users mr-3"></i>
+                    Users
+                </a>
+                <a href="{{ url_for('admin.export_csv') }}" 
+                   class="sidebar-link flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100">
+                    <i class="fas fa-download mr-3"></i>
+                    Export CSV
+                </a>
+            </nav>
+            
+            <div class="absolute bottom-0 w-64 p-6 border-t">
+                <a href="{{ url_for('admin.logout') }}" 
+                   class="flex items-center text-gray-600 hover:text-red-600">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    Logout
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="flex-1">
+            <!-- Top Bar -->
+            <header class="bg-white shadow-sm">
+                <div class="flex items-center justify-between px-8 py-4">
+                    <h1 class="text-2xl font-bold text-gray-800">{% block header %}Dashboard{% endblock %}</h1>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-600">
+                            <i class="fas fa-user mr-2"></i>{{ current_user.username }}
+                        </span>
+                        <a href="{{ url_for('main.index') }}" class="text-purple-600 hover:text-purple-800">
+                            <i class="fas fa-external-link-alt mr-1"></i>View Site
+                        </a>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="px-8 pt-4">
+                        {% for category, message in messages %}
+                            <div class="rounded-md p-4 mb-2 {% if category == 'error' %}bg-red-50 text-red-800{% elif category == 'success' %}bg-green-50 text-green-800{% else %}bg-blue-50 text-blue-800{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Page Content -->
+            <main class="p-8">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

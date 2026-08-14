@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}Upload CV - IntelliCV{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-12">
+    <!-- Progress Steps -->
+    <div class="mb-12">
+        <div class="flex items-center justify-center">
+            <div class="flex items-center">
+                <div id="step1-indicator" class="w-10 h-10 rounded-full gradient-bg text-white flex items-center justify-center font-bold shadow-lg shadow-purple-500/20">
+                    1
+                </div>
+                <span class="ml-2 font-medium text-gray-700 dark:text-gray-300 hidden sm:block">Your Info</span>
+            </div>
+            <div class="w-12 sm:w-24 h-1 bg-gray-200 dark:bg-slate-800 mx-2 sm:mx-4">
+                <div id="progress-bar" class="h-full gradient-bg transition-all" style="width: 0%"></div>
+            </div>
+            <div class="flex items-center">
+                <div id="step2-indicator" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-800 text-gray-500 dark:text-gray-400 flex items-center justify-center font-bold">
+                    2
+                </div>
+                <span class="ml-2 font-medium text-gray-400 dark:text-gray-500 hidden sm:block">Upload CV</span>
+            </div>
+            <div class="w-12 sm:w-24 h-1 bg-gray-200 dark:bg-slate-800 mx-2 sm:mx-4"></div>
+            <div class="flex items-center">
+                <div id="step3-indicator" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-slate-800 text-gray-500 dark:text-gray-400 flex items-center justify-center font-bold">
+                    3
+                </div>
+                <span class="ml-2 font-medium text-gray-400 dark:text-gray-500 hidden sm:block">Analysis</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 1: User Info -->
+    <div id="step1" class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 border border-transparent dark:border-slate-800 transition-all duration-300">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            <i class="fas fa-user mr-3 text-purple-600 dark:text-purple-400"></i>Enter Your Information
+        </h2>
+        
+        <form id="userForm" class="space-y-6">
+            <div>
+                <label for="full_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Full Name <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="full_name" name="full_name" required
+                       class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                       placeholder="Enter your full name">
+            </div>
+            
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Email Address <span class="text-red-500">*</span>
+                </label>
+                <input type="email" id="email" name="email" required
+                       class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                       placeholder="your.email@example.com">
+            </div>
+            
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Phone Number <span class="text-red-500">*</span>
+                </label>
+                <input type="tel" id="phone" name="phone" required
+                       class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                       placeholder="+1 234 567 8900">
+            </div>
+            
+            <div class="flex justify-end pt-4">
+                <button type="submit" 
+                        class="gradient-bg text-white w-full sm:w-auto px-10 py-4 rounded-lg font-semibold hover:opacity-90 transition-all flex items-center justify-center shadow-lg shadow-purple-500/20">
+                    Continue <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Step 2: CV Upload -->
+    <div id="step2" class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 border border-transparent dark:border-slate-800 hidden transition-all duration-300">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+            <i class="fas fa-file-upload mr-3 text-purple-600 dark:text-purple-400"></i>Upload Your CV
+        </h2>
+        
+        <div class="mb-6">
+            <div id="dropZone" class="drop-zone border-2 border-dashed border-gray-300 dark:border-slate-700 rounded-xl p-8 sm:p-12 text-center cursor-pointer hover:border-purple-500 dark:hover:border-purple-400 transition-all bg-gray-50 dark:bg-slate-800/50">
+                <input type="file" id="cvFile" accept=".pdf" class="hidden">
+                <div id="dropContent">
+                    <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                    <p class="text-lg text-gray-600 dark:text-gray-300 mb-2">
+                        Drag & drop your CV here or <span class="text-purple-600 dark:text-purple-400 font-medium">browse</span>
+                    </p>
+                    <p class="text-sm text-gray-400 dark:text-gray-500">Only PDF files, max 16MB</p>
+                </div>
+                <div id="fileInfo" class="hidden">
+                    <i class="fas fa-file-pdf text-6xl text-red-500 mb-4"></i>
+                    <p id="fileName" class="text-lg text-gray-700 dark:text-gray-200 font-medium mb-2"></p>
+                    <button type="button" id="removeFile" class="text-red-500 hover:text-red-700 dark:hover:text-red-400 text-sm">
+                        <i class="fas fa-times mr-1"></i>Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PDF Preview -->
+        <div id="pdfPreview" class="hidden mb-6">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">Preview</h3>
+            <div class="border dark:border-slate-800 rounded-lg overflow-auto bg-gray-100 dark:bg-slate-800/50 flex justify-center items-start" style="max-height: 500px;">
+                <canvas id="pdfCanvas" class="max-w-full h-auto shadow-md"></canvas>
+            </div>
+        </div>
+        
+        <div class="flex justify-between">
+            <button type="button" id="backToStep1"
+                    class="px-6 py-3 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-all">
+                <i class="fas fa-arrow-left mr-2"></i>Back
+            </button>
+            <button type="button" id="analyzeBtn" disabled
+                    class="gradient-bg text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                <i class="fas fa-magic mr-2"></i>Analyze CV
+            </button>
+        </div>
+    </div>
+    
+    <!-- Step 3: Analysis Progress -->
+    <div id="step3" class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 border border-transparent dark:border-slate-800 hidden transition-all duration-300">
+        <div class="text-center">
+            <div class="mb-8">
+                <div class="relative inline-block">
+                    <div class="w-24 sm:w-32 h-24 sm:h-32 rounded-full border-4 border-purple-200 dark:border-purple-900/30 flex items-center justify-center">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Analyzing Your CV</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-8">Our AI is processing your resume...</p>
+            
+            <!-- Processing Steps -->
+            <div class="max-w-md mx-auto space-y-4 text-left">
+                <div id="proc-step1" class="flex items-center text-gray-400 dark:text-gray-600">
+                    <div class="w-8 h-8 rounded-full border-2 border-current flex items-center justify-center mr-3">
+                        <i class="fas fa-file-alt text-sm"></i>
+                    </div>
+                    <span class="font-medium">Extracting text from PDF</span>
+                </div>
+                <div id="proc-step2" class="flex items-center text-gray-400 dark:text-gray-600">
+                    <div class="w-8 h-8 rounded-full border-2 border-current flex items-center justify-center mr-3">
+                        <i class="fas fa-brain text-sm"></i>
+                    </div>
+                    <span class="font-medium">Running NLP analysis</span>
+                </div>
+                <div id="proc-step3" class="flex items-center text-gray-400 dark:text-gray-600">
+                    <div class="w-8 h-8 rounded-full border-2 border-current flex items-center justify-center mr-3">
+                        <i class="fas fa-chart-bar text-sm"></i>
+                    </div>
+                    <span class="font-medium">Calculating scores</span>
+                </div>
+                <div id="proc-step4" class="flex items-center text-gray-400 dark:text-gray-600">
+                    <div class="w-8 h-8 rounded-full border-2 border-current flex items-center justify-center mr-3">
+                        <i class="fas fa-lightbulb text-sm"></i>
+                    </div>
+                    <span class="font-medium">Generating recommendations</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Display -->
+    <div id="errorDisplay" class="hidden mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex items-center text-red-700">
+            <i class="fas fa-exclamation-circle mr-3 text-xl"></i>
+            <span id="errorMessage"></span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize PDF.js
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let userId = null;
+let selectedFile = null;
+
+// DOM Elements
+const userForm = document.getElementById('userForm');
+const dropZone = document.getElementById('dropZone');
+const cvFile = document.getElementById('cvFile');
+const analyzeBtn = document.getElementById('analyzeBtn');
+
+// Step 1: User Form Submission
+userForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = {
+        full_name: document.getElementById('full_name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value
+    };
+    
+    try {
+        const response = await fetch('/api/submit-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            userId = data.user_id;
+            showStep(2);
+        } else {
+            showError(data.error || 'Failed to save user information');
+        }
+    } catch (error) {
+        console.error('Submit error:', error);
+        showError('Network error: ' + (error.message || 'Please check your connection and try again.'));
+    }
+});
+
+// Step Navigation
+function showStep(step) {
+    document.getElementById('step1').classList.toggle('hidden', step !== 1);
+    document.getElementById('step2').classList.toggle('hidden', step !== 2);
+    document.getElementById('step3').classList.toggle('hidden', step !== 3);
+    
+    // Update indicators
+    const indicators = [
+        document.getElementById('step1-indicator'),
+        document.getElementById('step2-indicator'),
+        document.getElementById('step3-indicator')
+    ];
+    
+    indicators.forEach((ind, i) => {
+        if (i < step) {
+            ind.classList.add('gradient-bg', 'text-white');
+            ind.classList.remove('bg-gray-200', 'text-gray-500');
+        } else {
+            ind.classList.remove('gradient-bg', 'text-white');
+            ind.classList.add('bg-gray-200', 'text-gray-500');
+        }
+    });
+    
+    // Update progress bar
+    document.getElementById('progress-bar').style.width = ((step - 1) * 50) + '%';
+}
+
+document.getElementById('backToStep1').addEventListener('click', () => showStep(1));
+
+// File Upload Handling
+dropZone.addEventListener('click', () => cvFile.click());
+
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFile(files[0]);
+    }
+});
+
+cvFile.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+    }
+});
+
+function handleFile(file) {
+    // Validate file type
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+        showError('Please upload a PDF file');
+        return;
+    }
+    
+    // Validate file size (16MB)
+    if (file.size > 16 * 1024 * 1024) {
+        showError('File size exceeds 16MB limit');
+        return;
+    }
+    
+    selectedFile = file;
+    
+    // Update UI
+    document.getElementById('dropContent').classList.add('hidden');
+    document.getElementById('fileInfo').classList.remove('hidden');
+    document.getElementById('fileName').textContent = file.name;
+    analyzeBtn.disabled = false;
+    
+    // Render PDF preview
+    renderPdfPreview(file);
+}
+
+document.getElementById('removeFile').addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectedFile = null;
+    cvFile.value = '';
+    
+    document.getElementById('dropContent').classList.remove('hidden');
+    document.getElementById('fileInfo').classList.add('hidden');
+    document.getElementById('pdfPreview').classList.add('hidden');
+    analyzeBtn.disabled = true;
+});
+
+async function renderPdfPreview(file) {
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+        const page = await pdf.getPage(1);
+        
+        const canvas = document.getElementById('pdfCanvas');
+        const context = canvas.getContext('2d');
+        
+        const viewport = page.getViewport({ scale: 1.5 });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        
+        await page.render({
+            canvasContext: context,
+            viewport: viewport
+        }).promise;
+        
+        document.getElementById('pdfPreview').classList.remove('hidden');
+    } catch (error) {
+        console.error('PDF preview error:', error);
+    }
+}
+
+// Analyze CV
+analyzeBtn.addEventListener('click', async () => {
+    if (!selectedFile || !userId) return;
+    
+    showStep(3);
+    simulateProgress();
+    
+    const formData = new FormData();
+    formData.append('user_id', userId);
+    formData.append('cv_file', selectedFile);
+    
+    try {
+        const response = await fetch('/api/upload-cv', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Redirect to results
+            window.location.href = data.redirect_url;
+        } else {
+            showStep(2);
+            showError(data.error || 'Failed to analyze CV');
+        }
+    } catch (error) {
+        showStep(2);
+        console.error('Upload error:', error);
+        showError('Network error: ' + (error.message || 'Please check your connection and try again.'));
+    }
+});
+
+function simulateProgress() {
+    const steps = ['proc-step1', 'proc-step2', 'proc-step3', 'proc-step4'];
+    let currentStep = 0;
+    
+    const interval = setInterval(() => {
+        if (currentStep < steps.length) {
+            const el = document.getElementById(steps[currentStep]);
+            el.classList.remove('text-gray-400');
+            el.classList.add('text-green-600');
+            el.querySelector('i').classList.add('fa-check');
+            currentStep++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 1500);
+}
+
+function showError(message) {
+    const errorDisplay = document.getElementById('errorDisplay');
+    document.getElementById('errorMessage').textContent = message;
+    errorDisplay.classList.remove('hidden');
+    
+    setTimeout(() => {
+        errorDisplay.classList.add('hidden');
+    }, 5000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+
+{% block title %}CV Analysis Results - IntelliCV{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            CV Analysis Results
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+            Analysis completed for <span class="font-semibold text-purple-600 dark:text-purple-400">{{ analysis.user.full_name }}</span>
+            <span class="text-gray-400 dark:text-slate-600 px-2">•</span>
+            {{ analysis.created_at.strftime('%B %d, %Y at %H:%M') }}
+        </p>
+    </div>
+    
+    <!-- Score Overview -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 border border-transparent dark:border-slate-800 transition-all duration-300">
+        <div class="flex flex-col lg:flex-row items-center justify-between">
+            <!-- Main Score Circle -->
+            <div class="text-center lg:text-left mb-8 lg:mb-0">
+                <div class="score-circle mx-auto lg:mx-0 mb-4">
+                    <svg viewBox="0 0 160 160" class="w-full h-full">
+                        <circle cx="80" cy="80" r="70" fill="none" stroke-width="12" class="score-bg dark:stroke-slate-800"/>
+                        <circle cx="80" cy="80" r="70" fill="none" stroke-width="12" 
+                                class="score-progress filter drop-shadow-[0_0_8px_rgba(34,197,94,0.3)]"
+                                stroke="{{ '#22c55e' if analysis.score >= 70 else '#eab308' if analysis.score >= 40 else '#ef4444' }}"
+                                stroke-linecap="round"
+                                id="scoreCircle"/>
+                    </svg>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div>
+                            <span id="scoreValue" class="text-4xl font-bold text-gray-900 dark:text-white">0</span>
+                            <span class="text-xl text-gray-500 dark:text-gray-400">/100</span>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center lg:text-left">Overall Score</h2>
+                <p class="text-gray-600 dark:text-gray-400 text-center lg:text-left">
+                    {% if analysis.score >= 80 %}
+                        Excellent CV! Very competitive.
+                    {% elif analysis.score >= 60 %}
+                        Good CV with room for improvement.
+                    {% elif analysis.score >= 40 %}
+                        Average CV. Consider improvements.
+                    {% else %}
+                        Needs significant improvement.
+                    {% endif %}
+                </p>
+            </div>
+            
+            <!-- Key Metrics -->
+            <div class="flex-1 lg:ml-12 w-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-100 dark:border-slate-800">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-user-tie text-purple-500 mr-3"></i>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm">Experience Level</span>
+                        </div>
+                        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ analysis.experience_level }}</p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-100 dark:border-slate-800">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-briefcase text-blue-500 mr-3"></i>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm">Career Field</span>
+                        </div>
+                        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ analysis.career_field }}</p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-100 dark:border-slate-800">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-code text-green-500 mr-3"></i>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm">Skills Found</span>
+                        </div>
+                        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ analysis.skills_found|length if analysis.skills_found else 0 }}</p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-100 dark:border-slate-800">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-clock text-yellow-500 mr-3"></i>
+                            <span class="text-gray-600 dark:text-gray-400 text-sm">Processing Time</span>
+                        </div>
+                        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ analysis.processing_time }}s</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Score Breakdown -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 border border-transparent dark:border-slate-800">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+            <i class="fas fa-chart-bar mr-3 text-purple-600 dark:text-purple-400"></i>Score Breakdown
+        </h3>
+        
+        <div class="space-y-6">
+            <!-- Experience Score -->
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Experience Level (25%)</span>
+                    <span class="font-bold text-gray-900 dark:text-white">{{ analysis.experience_score|round(1) }}/100</span>
+                </div>
+                <div class="h-3 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full gradient-bg rounded-full shadow-[0_0_10px_rgba(124,58,237,0.3)]" style="width: 0%" data-width="{{ analysis.experience_score }}%"></div>
+                </div>
+            </div>
+            
+            <!-- Skills Score -->
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Skills Relevance (25%)</span>
+                    <span class="font-bold text-gray-900 dark:text-white">{{ analysis.skills_score|round(1) }}/100</span>
+                </div>
+                <div class="h-3 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.3)]" style="width: 0%" data-width="{{ analysis.skills_score }}%"></div>
+                </div>
+            </div>
+            
+            <!-- Structure Score -->
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="font-medium text-gray-700 dark:text-gray-300">CV Structure & Completeness (20%)</span>
+                    <span class="font-bold text-gray-900 dark:text-white">{{ analysis.structure_score|round(1) }}/100</span>
+                </div>
+                <div class="h-3 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.3)]" style="width: 0%" data-width="{{ analysis.structure_score }}%"></div>
+                </div>
+            </div>
+            
+            <!-- Career Score -->
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Career Field Alignment (15%)</span>
+                    <span class="font-bold text-gray-900 dark:text-white">{{ analysis.career_score|round(1) }}/100</span>
+                </div>
+                <div class="h-3 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-yellow-500 rounded-full shadow-[0_0_10px_rgba(234,179,8,0.3)]" style="width: 0%" data-width="{{ analysis.career_score }}%"></div>
+                </div>
+            </div>
+            
+            <!-- Readability Score -->
+            <div>
+                <div class="flex justify-between mb-2">
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Readability & Clarity (15%)</span>
+                    <span class="font-bold text-gray-900 dark:text-white">{{ analysis.readability_score|round(1) }}/100</span>
+                </div>
+                <div class="h-3 bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-purple-500 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.3)]" style="width: 0%" data-width="{{ analysis.readability_score }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Detected Sections -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 border border-transparent dark:border-slate-800">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-list mr-3 text-blue-600 dark:text-blue-400"></i>CV Sections
+            </h3>
+            
+            <div class="space-y-4">
+                {% for section_name, section_data in analysis.sections_detected.items() %}
+                <div class="flex items-center justify-between p-4 rounded-lg {{ 'bg-green-50 dark:bg-green-900/20' if section_data.detected else 'bg-gray-50 dark:bg-slate-800/50' }} border {{ 'border-green-100 dark:border-green-900/30' if section_data.detected else 'border-gray-100 dark:border-slate-800' }}">
+                    <div class="flex items-center">
+                        {% if section_data.detected %}
+                            <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                        {% else %}
+                            <i class="fas fa-times-circle text-gray-400 dark:text-gray-600 mr-3"></i>
+                        {% endif %}
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ section_name.replace('_', ' ').title() }}</span>
+                    </div>
+                    {% if section_data.detected %}
+                        <span class="px-3 py-1 rounded-full text-sm font-medium {{ 'bg-green-200 text-green-800 dark:bg-green-900/50 dark:text-green-300' if section_data.quality_score >= 7 else 'bg-yellow-200 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300' if section_data.quality_score >= 4 else 'bg-red-200 text-red-800 dark:bg-red-900/50 dark:text-red-300' }}">
+                            {{ section_data.quality_score|round(1) }}/10
+                        </span>
+                    {% else %}
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-gray-400">
+                            Missing
+                        </span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Skills Found -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 border border-transparent dark:border-slate-800">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-code mr-3 text-green-600 dark:text-green-400"></i>Skills Detected
+            </h3>
+            
+            {% if analysis.skills_found %}
+                <div class="flex flex-wrap gap-2">
+                    {% for skill in analysis.skills_found %}
+                        <span class="px-4 py-2 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:text-purple-700 dark:hover:text-purple-400 transition-colors border border-transparent dark:border-slate-700">
+                            {{ skill }}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 dark:text-gray-400">No specific skills detected. Consider adding a dedicated skills section.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Strengths & Weaknesses -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Strengths -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 border border-transparent dark:border-slate-800">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-thumbs-up mr-3 text-green-600 dark:text-green-400"></i>Strengths
+            </h3>
+            
+            {% if analysis.recommendations and analysis.recommendations.strengths %}
+                <ul class="space-y-4">
+                    {% for strength in analysis.recommendations.strengths %}
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mr-3 mt-1 shadow-green-500/20"></i>
+                            <span class="text-gray-700 dark:text-gray-300">{{ strength }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 dark:text-gray-400">Analysis in progress...</p>
+            {% endif %}
+        </div>
+        
+        <!-- Weaknesses -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 border border-transparent dark:border-slate-800">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-exclamation-triangle mr-3 text-yellow-600 dark:text-yellow-500"></i>Areas for Improvement
+            </h3>
+            
+            {% if analysis.recommendations and analysis.recommendations.weaknesses %}
+                <ul class="space-y-4">
+                    {% for weakness in analysis.recommendations.weaknesses %}
+                        <li class="flex items-start">
+                            <i class="fas fa-arrow-right text-yellow-500 dark:text-yellow-400 mr-3 mt-1"></i>
+                            <span class="text-gray-700 dark:text-gray-300">{{ weakness }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 dark:text-gray-400">No major weaknesses identified.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recommendations -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 border border-transparent dark:border-slate-800">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+            <i class="fas fa-lightbulb mr-3 text-yellow-600 dark:text-yellow-500"></i>Recommendations
+        </h3>
+        
+        {% if analysis.recommendations and analysis.recommendations.recommendations %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for rec in analysis.recommendations.recommendations %}
+                    <div class="flex items-start p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                        <div class="w-8 h-8 rounded-full bg-blue-500 dark:bg-blue-600 text-white flex items-center justify-center mr-4 flex-shrink-0 font-bold">
+                            {{ loop.index }}
+                        </div>
+                        <p class="text-gray-700 dark:text-gray-300">{{ rec }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 dark:text-gray-400">No specific recommendations at this time.</p>
+        {% endif %}
+    </div>
+    
+    <!-- YouTube Suggestions -->
+    {% if analysis.recommendations and analysis.recommendations.youtube_suggestions %}
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 mb-8 border border-transparent dark:border-slate-800">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
+            <i class="fab fa-youtube mr-3 text-red-600 dark:text-red-500"></i>Learning Resources
+        </h3>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for suggestion in analysis.recommendations.youtube_suggestions %}
+                <div class="bg-gray-50 dark:bg-slate-800/50 rounded-xl overflow-hidden hover:bg-red-50 dark:hover:bg-red-900/10 transition-all group border border-gray-100 dark:border-slate-800 hover:border-red-200 dark:hover:border-red-900/30 flex flex-col">
+                    <a href="https://www.youtube.com/results?search_query={{ suggestion.query|urlencode }}" 
+                       target="_blank"
+                       class="block relative aspect-video overflow-hidden">
+                        {% if suggestion.video_id %}
+                            <img src="https://img.youtube.com/vi/{{ suggestion.video_id }}/mqdefault.jpg" 
+                                 alt="{{ suggestion.title }}"
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        {% else %}
+                            <div class="w-full h-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                <i class="fab fa-youtube text-red-500 text-4xl"></i>
+                            </div>
+                        {% endif %}
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <i class="fas fa-play text-white text-3xl opacity-0 group-hover:opacity-100 transform scale-50 group-hover:scale-100 transition-all duration-300"></i>
+                        </div>
+                    </a>
+                    <div class="p-5 flex-grow">
+                        <div class="flex items-start mb-2">
+                            <i class="fab fa-youtube text-red-500 text-lg mr-2 mt-1 flex-shrink-0"></i>
+                            <h4 class="font-bold text-gray-900 dark:text-white leading-tight line-clamp-2">
+                                {{ suggestion.title }}
+                            </h4>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                            {{ suggestion.reason }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Actions -->
+    <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+        <a href="{{ url_for('main.upload') }}" 
+           class="gradient-bg text-white px-10 py-4 rounded-lg font-semibold hover:opacity-90 transition-all text-center shadow-lg shadow-purple-500/20">
+            <i class="fas fa-upload mr-2"></i>Analyze Another CV
+        </a>
+        <button onclick="window.print()" 
+                class="border-2 border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 px-10 py-4 rounded-lg font-semibold hover:bg-gray-100 dark:hover:bg-slate-800 transition-all">
+            <i class="fas fa-print mr-2"></i>Print Results
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const score = Number('{{ analysis.score }}') || 0;
+    
+    // Animate score circle
+    const scoreCircle = document.getElementById('scoreCircle');
+    const circumference = 2 * Math.PI * 70; // radius = 70
+    const offset = circumference - (score / 100) * circumference;
+    
+    setTimeout(() => {
+        scoreCircle.style.strokeDashoffset = offset;
+    }, 100);
+    
+    // Animate score number
+    const scoreValue = document.getElementById('scoreValue');
+    let currentScore = 0;
+    const increment = score / 50;
+    
+    const scoreInterval = setInterval(() => {
+        currentScore += increment;
+        if (currentScore >= score) {
+            currentScore = score;
+            clearInterval(scoreInterval);
+        }
+        scoreValue.textContent = Math.round(currentScore);
+    }, 20);
+    
+    // Animate progress bars
+    document.querySelectorAll('.progress-bar').forEach(bar => {
+        setTimeout(() => {
+            bar.style.width = bar.dataset.width;
+        }, 300);
+    });
+});
+</script>
+{% endblock %}

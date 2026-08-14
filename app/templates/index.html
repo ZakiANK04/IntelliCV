@@ -1,0 +1,830 @@
+{% extends "base.html" %}
+
+{% block title %}IntelliCV - NLP-Powered Resume Intelligence Platform{% endblock %}
+
+{% block content %}
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+<!-- Loading Screen -->
+<div id="loading-screen" class="fixed inset-0 bg-white dark:bg-slate-950 flex items-center justify-center z-50 transition-colors">
+    <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 dark:border-purple-400"></div>
+</div>
+<div class="relative min-h-screen bg-[#FDFCF8] dark:bg-slate-950 transition-colors">
+    <!-- Grain Overlay -->
+    <div class="fixed inset-0 opacity-20 dark:opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 256 256%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+    <!-- Grid Pattern -->
+    <div class="fixed inset-0 opacity-20 dark:opacity-10 pointer-events-none" style="background-image: linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
+    <!-- Hero Section: Asymmetrical & Human -->
+    <section class="relative pt-32 pb-24 overflow-hidden bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 transition-colors">
+        <!-- Geometric Background Shapes -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-20 left-10 w-32 h-32 border-2 border-gray-300 rotate-45 opacity-10"></div>
+            <div class="absolute top-40 right-20 w-24 h-24 border border-gray-400 rounded-full opacity-10"></div>
+            <div class="absolute bottom-20 left-1/4 w-40 h-40 border border-gray-200 rotate-12 opacity-10"></div>
+            <div class="absolute bottom-40 right-1/3 w-28 h-28 border-2 border-gray-300 rounded-lg opacity-10"></div>
+        </div>
+        <!-- Floating Particles Background -->
+        <div class="parallax-container absolute inset-0 overflow-hidden">
+            <div class="particle particle-1"></div>
+            <div class="particle particle-2"></div>
+            <div class="particle particle-3"></div>
+            <div class="particle particle-4"></div>
+            <div class="particle particle-5"></div>
+            <div class="particle particle-6"></div>
+            <div class="particle particle-7"></div>
+            <div class="particle particle-8"></div>
+            <div class="particle particle-9"></div>
+            <div class="particle particle-10"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <div class="lg:w-1/2">
+                    <h1 class="reveal text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-8 tracking-tight leading-[1.1]" style="font-family: 'Space Grotesk', sans-serif;">
+                        Your CV, <br/>
+                        <span class="italic-accent text-a78bfa" style="color: #a78bfa;">Parsed.</span> 
+                        <span id="typing-text" class="typing-cursor"></span>
+                    </h1>
+                    
+                    <p class="reveal text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mb-12 leading-relaxed">
+                        Moving beyond simple keywords. IntelliCV uses structural NLP to understand 
+                        the human story behind your career, providing tactile feedback that actually makes sense.
+                    </p>
+                    
+                    <div class="reveal flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                        <a href="{{ url_for('main.upload') }}" 
+                           class="w-full sm:w-auto brutalist-button group relative px-8 sm:px-10 py-4 sm:py-5 bg-black text-white font-bold text-base sm:text-lg transition-all active:translate-x-1 active:translate-y-1 active:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            Analyze Your CV
+                            <span class="absolute inset-0 border-2 border-black translate-x-1 translate-y-1 transition-all group-active:translate-x-0 group-active:translate-y-0"></span>
+                        </a>
+                        <a href="{{ url_for('main.documentation') }}" 
+                           class="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-white border-2 border-black font-bold text-base sm:text-lg hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            Project Details
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="lg:w-1/2 relative flex justify-center items-center mt-12 lg:mt-0 h-72 sm:h-80 md:h-96 lg:h-[480px]">
+                    <!-- Resume Scanner Visualization -->
+                    <div class="resume-scanner relative w-full max-w-xs sm:max-w-sm h-full bg-white dark:bg-slate-800 border-2 border-gray-900 dark:border-slate-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] sm:dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.3)]">
+                        <div class="p-4 sm:p-6">
+                            <div class="h-4 bg-gray-200 mb-4"></div>
+                            <div class="space-y-2 mb-6">
+                                <div class="h-2 bg-gray-100"></div>
+                                <div class="h-2 bg-gray-100 w-5/6"></div>
+                                <div class="h-2 bg-gray-100 w-4/5"></div>
+                            </div>
+                            <div class="h-24 bg-gray-50 border border-gray-300 p-2">
+                                <div class="h-2 w-1/3 bg-gray-300 mb-2"></div>
+                                <div class="h-4 w-2/3 bg-gray-400"></div>
+                            </div>
+                        </div>
+                        <!-- Scanning Line -->
+                        <div class="absolute inset-0 overflow-hidden">
+                            <div class="scan-line absolute top-0 left-0 w-full h-1 bg-cyan-400 opacity-80"></div>
+                        </div>
+                    </div>
+                    <!-- Skill Bubbles - Responsive -->
+                    <div class="skill-bubbles absolute inset-0 w-full max-w-xs sm:max-w-sm h-full">
+                        <div class="skill-bubble bubble-1 text-xs sm:text-sm">Python</div>
+                        <div class="skill-bubble bubble-2 text-xs sm:text-sm">Excel</div>
+                        <div class="skill-bubble bubble-3 text-xs sm:text-sm">NLP</div>
+                        <div class="skill-bubble bubble-4 text-xs sm:text-sm">Cooking</div>
+                        <div class="skill-bubble bubble-5 text-xs sm:text-sm">Design</div>
+                        <div class="skill-bubble bubble-6 text-xs sm:text-sm">Analytics</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Blueprint -->
+    <section class="py-24 relative overflow-hidden bg-white dark:bg-slate-900 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="reveal text-4xl font-bold text-gray-900 dark:text-white mb-4" style="font-family: 'Space Grotesk', sans-serif;">
+                    Document <span class="italic-accent text-purple-600 dark:text-purple-400">Intelligence.</span>
+                </h2>
+                <p class="reveal text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    A refactored approach to CV analysis, designed to be human-readable and creative.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 md:gap-6 h-auto md:h-[600px]">
+                <!-- Main Feature: Spans 2x2 -->
+                <div class="reveal md:col-span-2 md:row-span-2 blueprint-card p-6 sm:p-10 flex flex-col justify-between group overflow-hidden relative bg-white dark:bg-slate-800 border-2 border-gray-900 dark:border-slate-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] sm:dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.3)]">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-gray-900"></div>
+                    <div class="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-gray-900"></div>
+                    <div class="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-gray-900"></div>
+                    <div class="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-gray-900"></div>
+                    <div class="z-10">
+                        <div class="w-12 sm:w-14 h-12 sm:h-14 bg-gray-100 rounded-xl flex items-center justify-center mb-6 sm:mb-8 border border-gray-900">
+                            <i class="fas fa-brain text-xl sm:text-2xl text-gray-900"></i>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6" style="font-family: 'Space Grotesk', sans-serif;">Structural NLP Analysis</h3>
+                        <p class="text-sm sm:text-base lg:text-lg text-gray-600 leading-relaxed highlighter">
+                            Our core engine doesn't just look for words; it understands the hierarchy of your professional identity. 
+                            We extract meaning from the document's DNA, identifying strengths you didn't even know you highlighted.
+                        </p>
+                    </div>
+                    <!-- Subtle Graphic -->
+                    <div class="absolute -right-20 -bottom-20 opacity-5 dark:opacity-10 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-microchip text-[15rem]"></i>
+                    </div>
+                </div>
+
+                <!-- Secondary: Spans 2x1 -->
+                <div class="reveal md:col-span-2 blueprint-card p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 group bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-900"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-gray-900"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-gray-900"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-900"></div>
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-full flex-shrink-0 flex items-center justify-center border border-gray-900 group-hover:rotate-12 transition-transform">
+                        <i class="fas fa-chart-line text-xl sm:text-2xl text-gray-900"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2" style="font-family: 'Space Grotesk', sans-serif;">Quantifiable Metrics</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 italic-accent">Scores across 5 core categories for a balanced view.</p>
+                    </div>
+                </div>
+
+                <!-- Skill Feature: Spans 1x1 -->
+                <div class="reveal blueprint-card p-8 flex flex-col justify-center group bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-900"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-gray-900"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-gray-900"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-900"></div>
+                    <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4 border border-gray-900 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-bolt text-xl text-gray-900"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2" style="font-family: 'Space Grotesk', sans-serif;">Skill Detection</h3>
+                    <p class="text-sm text-gray-500">100+ recognized skills.</p>
+                </div>
+
+                <!-- Recommendation Feature: Spans 1x1 -->
+                <div class="reveal blueprint-card p-8 flex flex-col justify-center group bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] relative">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-900"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-gray-900"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-gray-900"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-900"></div>
+                    <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4 border border-gray-900 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-lightbulb text-xl text-gray-900"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2" style="font-family: 'Space Grotesk', sans-serif;">Career Pivot</h3>
+                    <p class="text-sm text-gray-500">Smart alignment checks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="py-12 md:py-16 border-y-2 border-gray-900 dark:border-slate-700 bg-white dark:bg-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                <div class="reveal text-center">
+                    <div class="stat-number text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white" style="font-family: 'Space Grotesk', sans-serif;">12,402</div>
+                    <div class="text-xs tracking-widest text-gray-500 dark:text-gray-400 mt-2 uppercase">CVs Parsed</div>
+                </div>
+                <div class="reveal text-center">
+                    <div class="stat-number text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white" style="font-family: 'Space Grotesk', sans-serif;">95.4%</div>
+                    <div class="text-xs tracking-widest text-gray-500 dark:text-gray-400 mt-2 uppercase">Accuracy Rate</div>
+                </div>
+                <div class="reveal text-center">
+                    <div class="stat-number text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white" style="font-family: 'Space Grotesk', sans-serif;">&lt;0.8s</div>
+                    <div class="text-xs tracking-widest text-gray-500 dark:text-gray-400 mt-2 uppercase">Mean Latency</div>
+                </div>
+                <div class="reveal text-center">
+                    <div class="stat-number text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white" style="font-family: 'Space Grotesk', sans-serif;">52</div>
+                    <div class="text-xs tracking-widest text-gray-500 dark:text-gray-400 mt-2 uppercase">Career Vectors</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Image Collage Section -->
+    <section class="py-16 md:py-24 bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-12">
+                <h2 class="reveal text-center text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4" style="font-family: 'Space Grotesk', sans-serif;">
+                    Powerful <span class="italic-accent text-purple-600 dark:text-purple-400">Analytics.</span>
+                </h2>
+                <p class="reveal text-center text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                    Visualize career insights with beautiful, tactile design.
+                </p>
+            </div>
+
+            <!-- Overlapping Image Collage -->
+            <div class="reveal flex justify-center items-center min-h-96 md:min-h-[500px]">
+                <div class="relative w-full max-w-2xl h-96 md:h-[500px]">
+                    <!-- Image 1: Large Vertical (Back) -->
+                    <div class="absolute inset-0 flex items-center justify-center z-0 top-4 left-1/2 transform -translate-x-1/2">
+                        <img 
+                            src="{{ url_for('static', filename='img/collage_portrait.jpg') }}" 
+                            alt="Analytics Dashboard"
+                            class="h-full w-auto object-cover border-2 border-gray-900 dark:border-slate-500 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.3)]"
+                        >
+                    </div>
+
+                    <!-- Image 2: Square (Middle) - Offset Left -->
+                    <div class="absolute z-10 top-12 left-0 md:left-8">
+                        <img 
+                            src="{{ url_for('static', filename='img/collage_square.jpg') }}" 
+                            alt="CV Analysis"
+                            class="w-40 h-40 md:w-48 md:h-48 object-cover border-2 border-gray-900 dark:border-slate-500 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.3)] rotate-2 hover:rotate-3 transition-transform"
+                        >
+                    </div>
+
+                    <!-- Image 3: Small Landscape (Front) - Bottom Right -->
+                    <div class="absolute z-20 bottom-0 right-0 md:right-8">
+                        <img 
+                            src="{{ url_for('static', filename='img/collage_landscape.jpg') }}" 
+                            alt="Skills Detection"
+                            class="w-44 h-28 md:w-56 md:h-36 object-cover border-2 border-gray-900 dark:border-slate-500 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.3)] -rotate-1 hover:rotate-0 transition-transform"
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Grid -->
+    <section class="py-16 md:py-24 bg-white dark:bg-slate-900 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="reveal text-center text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-12 md:mb-20" style="font-family: 'Space Grotesk', sans-serif;">Human <span class="italic-accent text-gray-600 dark:text-gray-400">Feedback.</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <div class="reveal blueprint-card p-6 sm:p-8 bg-white dark:bg-slate-700 border-2 border-gray-900 dark:border-slate-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] relative transition-colors">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-900 dark:border-slate-500"></div>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-200 italic-accent mb-6 leading-relaxed">"The platform's ability to extract nuanced skills from complex CVs is impressive. It feels like a tool built for the future of recruitment."</p>
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <img src="{{ url_for('static', filename='melinia.png') }}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-900 dark:border-slate-500" alt="Melinia">
+                        <div>
+                            <div class="font-bold text-sm sm:text-base text-gray-900 dark:text-white">Melinia</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">AI Research Student</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal blueprint-card p-6 sm:p-8 bg-white dark:bg-slate-700 border-2 border-gray-900 dark:border-slate-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] relative transition-colors">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-900 dark:border-slate-500"></div>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-200 italic-accent mb-6 leading-relaxed">"The structural analysis found gaps in my profile that many recruiters missed. The parsing accuracy is truly top-tier for a project of this scale."</p>
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <img src="{{ url_for('static', filename='abdessamed.png') }}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-900 dark:border-slate-500" alt="Abdessamed (3sila)">
+                        <div>
+                            <div class="font-bold text-sm sm:text-base text-gray-900 dark:text-white">Abdessamed (3sila)</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">NLP Engineer</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal blueprint-card p-6 sm:p-8 bg-white dark:bg-slate-700 border-2 border-gray-900 dark:border-slate-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] relative transition-colors">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-900 dark:border-slate-500"></div>
+                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-200 italic-accent mb-6 leading-relaxed">"Clean, fast, and remarkably accurate. The combination of tactile design and raw NLP power makes it stand out from any other analyzer."</p>
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <img src="{{ url_for('static', filename='amine.png') }}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-gray-900 dark:border-slate-500" alt="Amine">
+                        <div>
+                            <div class="font-bold text-sm sm:text-base text-gray-900 dark:text-white">Amine TMT</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Full Stack Developer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section class="py-16 md:py-24 bg-gray-50 dark:bg-slate-800 transition-colors">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="reveal text-center text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-12 md:mb-16" style="font-family: 'Space Grotesk', sans-serif;">Common Questions</h2>
+            <div class="space-y-4">
+                <div class="reveal blueprint-card overflow-hidden bg-white dark:bg-slate-700 border-2 border-gray-900 dark:border-slate-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] relative transition-colors">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-900 dark:border-slate-500"></div>
+                    <button class="w-full p-4 sm:p-6 text-left flex flex-row justify-between items-center gap-4 bg-transparent hover:bg-purple-50 dark:hover:bg-slate-600 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                        <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white flex-1 text-wrap" style="font-family: 'Space Grotesk', sans-serif;">How does it differ from a human recruiter?</span>
+                        <i class="fas fa-chevron-down text-gray-600 dark:text-gray-300 flex-shrink-0 transition-transform"></i>
+                    </button>
+                    <div class="px-4 sm:px-6 pb-4 sm:pb-6 text-sm sm:text-base text-gray-600 dark:text-gray-300 hidden">
+                        We don't replace humans; we assist them. Our NLP engine provides a baseline 'structural' score so mentors can focus on personal narrative and coaching.
+                    </div>
+                </div>
+                <div class="reveal blueprint-card overflow-hidden bg-white dark:bg-slate-700 border-2 border-gray-900 dark:border-slate-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] relative transition-colors">
+                    <!-- Corner Markers -->
+                    <div class="absolute top-0 left-0 w-2 h-2 border-l border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute top-0 right-0 w-2 h-2 border-r border-t border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 left-0 w-2 h-2 border-l border-b border-gray-900 dark:border-slate-500"></div>
+                    <div class="absolute bottom-0 right-0 w-2 h-2 border-r border-b border-gray-900 dark:border-slate-500"></div>
+                    <button class="w-full p-4 sm:p-6 text-left flex flex-row justify-between items-center gap-4 bg-transparent hover:bg-purple-50 dark:hover:bg-slate-600 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                        <span class="font-bold text-sm sm:text-base text-gray-900 dark:text-white flex-1 text-wrap" style="font-family: 'Space Grotesk', sans-serif;">Is this project open access?</span>
+                        <i class="fas fa-chevron-down text-gray-600 dark:text-gray-300 flex-shrink-0 transition-transform"></i>
+                    </button>
+                    <div class="px-4 sm:px-6 pb-4 sm:pb-6 text-sm sm:text-base text-gray-600 dark:text-gray-300 hidden">
+                        Yes, this platform is developed as an educational project. You can access all features for CV analysis without any restrictions.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-16 md:py-32 bg-white dark:bg-slate-900 transition-colors">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="reveal relative py-12 sm:py-16 md:py-20 px-6 sm:px-10 border-2 border-gray-900 dark:border-slate-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] md:dark:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.3)] group transition-all bg-white dark:bg-slate-800">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6 sm:mb-8 leading-tight" style="font-family: 'Space Grotesk', sans-serif;">
+                    Refine your <span class="italic-accent text-gray-600 dark:text-gray-400">Professional Identity.</span>
+                </h2>
+                
+                <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 max-w-xl mx-auto">
+                    A university project exploring the intersection of creative design and NLP engineering.
+                </p>
+                
+                <a href="{{ url_for('main.upload') }}" 
+                   class="brutalist-button inline-block px-8 sm:px-12 py-4 sm:py-5 bg-black dark:bg-slate-700 text-white font-bold text-base sm:text-lg transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none">
+                    Analyze Your CV Now
+                    <span class="absolute inset-0 border-2 border-black dark:border-slate-600 translate-x-1 translate-y-1 transition-all group-active:translate-x-0 group-active:translate-y-0"></span>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+        50% { transform: translateY(-20px) rotate(1deg) scale(1.02); }
+    }
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .scan-line-v2 {
+        animation: scan-v2 3s ease-in-out infinite;
+    }
+    @keyframes scan-v2 {
+        0% { transform: translateY(0); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(400px); opacity: 0; }
+    }
+
+    /* Blueprint Card Hover with enhanced effects */
+    .blueprint-card {
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .blueprint-card:hover {
+        transform: translateY(-12px) rotate(1deg) skewY(-0.5deg);
+        box-shadow: 12px 12px 0px 0px rgba(0,0,0,1), 0 8px 30px rgba(192, 132, 252, 0.2);
+    }
+    .blueprint-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(192, 132, 252, 0.15), transparent 50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+    .blueprint-card:hover::before {
+        opacity: 1;
+    }
+
+    /* Floating Particles */
+    .particle {
+        position: absolute;
+        background: rgba(167, 139, 250, 0.5);
+        border-radius: 50%;
+        animation: float-particle 8s ease-in-out infinite;
+        box-shadow: 0 0 12px rgba(167, 139, 250, 0.6), inset 0 0 8px rgba(192, 132, 252, 0.3);
+    }
+    .particle::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 4px;
+        height: 4px;
+        background: #a78bfa;
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+        box-shadow: 0 0 6px #a78bfa, 0 0 12px rgba(167, 139, 250, 0.6);
+    }
+    @keyframes float-particle {
+        0%, 100% { transform: translateY(0px) translateX(0px); }
+        25% { transform: translateY(-35px) translateX(15px); }
+        50% { transform: translateY(-50px) translateX(-8px); }
+        75% { transform: translateY(-25px) translateX(12px); }
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+        50% { opacity: 1; transform: translate(-50%, -50%) scale(1.6); }
+    }
+    /* Individual particle positions and delays - centered better */
+    .particle-1 { top: 15%; left: 35%; width: 8px; height: 8px; animation-delay: 0s; }
+    .particle-2 { top: 25%; left: 75%; width: 6px; height: 6px; animation-delay: 1s; }
+    .particle-3 { top: 50%; left: 40%; width: 10px; height: 10px; animation-delay: 2s; }
+    .particle-4 { top: 65%; left: 65%; width: 7px; height: 7px; animation-delay: 3s; }
+    .particle-5 { top: 45%; left: 55%; width: 5px; height: 5px; animation-delay: 4s; }
+    .particle-6 { top: 60%; left: 45%; width: 9px; height: 9px; animation-delay: 5s; }
+    .particle-7 { top: 20%; left: 55%; width: 6px; height: 6px; animation-delay: 6s; }
+    .particle-8 { top: 70%; left: 50%; width: 8px; height: 8px; animation-delay: 7s; }
+    .particle-9 { top: 55%; left: 70%; width: 7px; height: 7px; animation-delay: 8s; }
+    .particle-10 { top: 35%; left: 42%; width: 5px; height: 5px; animation-delay: 9s; }
+
+    /* Skill Bubbles */
+    .skill-bubbles {
+        pointer-events: none;
+    }
+    .skill-bubble {
+        position: absolute;
+        background: linear-gradient(135deg, rgba(167, 139, 250, 0.95), rgba(147, 112, 219, 0.85));
+        border: 2.5px solid rgba(167, 139, 250, 0.7);
+        border-radius: 50%;
+        font-weight: 700;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 24px rgba(167, 139, 250, 0.4), inset 0 1px 0 rgba(255,255,255,0.25);
+        animation: hover-float 4s ease-in-out infinite;
+        transition: all 0.3s ease;
+    }
+    .skill-bubble:hover {
+        transform: scale(1.1) !important;
+        box-shadow: 0 12px 32px rgba(167, 139, 250, 0.6), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .bubble-1 { width: 70px; height: 70px; top: 10px; left: 5px; animation-delay: 0s; }
+    .bubble-2 { width: 60px; height: 60px; top: 50px; right: 10px; animation-delay: 0.3s; }
+    .bubble-3 { width: 50px; height: 50px; top: 160px; right: 15px; animation-delay: 0.6s; }
+    .bubble-4 { width: 55px; height: 55px; bottom: 40px; right: 20px; animation-delay: 0.9s; }
+    .bubble-5 { width: 60px; height: 60px; bottom: 30px; left: 15px; animation-delay: 1.2s; }
+    .bubble-6 { width: 50px; height: 50px; top: 130px; left: 5px; animation-delay: 1.5s; }
+    @media (max-width: 768px) {
+        .bubble-1 { width: 50px; height: 50px; font-size: 10px; top: -10px; left: 15px; }
+        .bubble-2 { width: 45px; height: 45px; font-size: 10px; top: 20px; right: -10px; }
+        .bubble-3 { width: 40px; height: 40px; font-size: 9px; top: 100px; right: -5px; }
+        .bubble-4 { width: 42px; height: 42px; font-size: 9px; bottom: 20px; right: 0px; }
+        .bubble-5 { width: 45px; height: 45px; font-size: 10px; bottom: 15px; left: 5px; }
+        .bubble-6 { width: 40px; height: 40px; font-size: 9px; top: 90px; left: -10px; }
+    }
+    @keyframes hover-float {
+        0%, 100% { transform: translateY(0px) translateX(0px) scale(1); }
+        25% { transform: translateY(-15px) translateX(5px) scale(1.05); }
+        50% { transform: translateY(-25px) translateX(-5px) scale(1.08); }
+        75% { transform: translateY(-10px) translateX(8px) scale(1.05); }
+    }
+    .highlighter {
+        background: linear-gradient(90deg, #fef08a 0%, #fef08a 100%);
+        background-size: 0% 100%;
+        background-repeat: no-repeat;
+        background-position: 0% 0%;
+        animation: highlight 2s ease-in-out 1s forwards;
+    }
+    @keyframes highlight {
+        0% { background-size: 0% 100%; }
+        50% { background-size: 100% 100%; }
+        100% { background-size: 0% 100%; }
+    }
+
+    /* Typing Cursor - No blinking, solid */
+    .typing-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        background-color: #a78bfa;
+        margin-left: 3px;
+        vertical-align: middle;
+        box-shadow: 0 0 8px rgba(167, 139, 250, 0.8);
+    }
+    @keyframes scan-line {
+        0% { transform: translateY(-100%); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(400px); opacity: 0; }
+    }
+
+    /* Typography */
+    body { font-family: 'Inter', sans-serif; }
+    .italic-accent { font-family: 'Playfair Display', serif; font-style: italic; }
+
+    /* Resume Scanner */
+    .scan-line {
+        animation: scan 2s ease-in-out infinite;
+    }
+    @keyframes scan {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(384px); } /* h-96 = 384px */
+        100% { transform: translateY(0); }
+    }
+
+    /* Highlighter Effect */
+    .highlighter {
+        background: linear-gradient(90deg, #fef08a 0%, transparent 0%);
+        background-size: 0% 100%;
+        background-repeat: no-repeat;
+        animation: highlight 2s ease-in-out 1s forwards;
+    }
+    @keyframes highlight {
+        to { background-size: 100% 100%; }
+    }
+
+    /* Brutalist Button */
+    .brutalist-button {
+        box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+        position: relative;
+        overflow: hidden;
+    }
+    .brutalist-button:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
+    }
+    .brutalist-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: rgba(167, 139, 250, 0.1);
+        transition: left 0.3s ease;
+    }
+    .brutalist-button:hover::before {
+        left: 100%;
+    }
+
+    /* Reveal animations on scroll */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: reveal 0.8s ease-out forwards;
+    }
+    .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    @keyframes reveal {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Enhanced card hover with gradient border */
+    .blueprint-card {
+        position: relative;
+        background: linear-gradient(white, white) padding-box,
+                    linear-gradient(135deg, transparent, rgba(167, 139, 250, 0.3), transparent) border-box;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .blueprint-card:hover {
+        transform: translateY(-8px) rotate(0.5deg);
+        box-shadow: 8px 8px 0px rgba(0,0,0,1), 0 12px 40px rgba(167, 139, 250, 0.15);
+        border-color: rgba(167, 139, 250, 0.5);
+    }
+
+    /* Animated accent underlines */
+    .italic-accent {
+        position: relative;
+        font-style: italic;
+    }
+    .italic-accent::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, #a78bfa, transparent);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+    .blueprint-card:hover .italic-accent::after {
+        opacity: 1;
+    }
+
+    /* Text scaling animation */
+    @keyframes text-scale {
+        0%, 100% { transform: scaleY(1); }
+        50% { transform: scaleY(1.05); }
+    }
+
+    /* Icon rotation on hover */
+    .blueprint-card i {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .blueprint-card:hover i {
+        transform: rotate(12deg) scale(1.2);
+    }
+
+    /* Floating animation for buttons */
+    @keyframes button-float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-4px); }
+    }
+
+    /* Link hover glow effect */
+    a[href*="upload"], a[href*="documentation"] {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    a[href*="upload"]::after, a[href*="documentation"]::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #a78bfa;
+        transition: width 0.3s ease;
+    }
+    a[href*="upload"]:hover::after, a[href*="documentation"]:hover::after {
+        width: 100%;
+    }
+
+    /* Stats counter animation */
+    .stat-number {
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.05em;
+    }
+
+    /* Responsive text sizing with better typography */
+    @media (max-width: 640px) {
+        body {
+            font-size: 14px;
+        }
+        h1 { letter-spacing: -0.01em; }
+        h2 { letter-spacing: -0.02em; }
+    }
+
+    /* Smooth transitions for all interactive elements */
+    button, a, [role="button"] {
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Gradient text effect */
+    .gradient-text {
+        background: linear-gradient(135deg, #a78bfa 0%, #9f7aea 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* FAQ Button Styling */
+    .blueprint-card button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        font-size: inherit;
+        color: inherit;
+    }
+    .blueprint-card button span {
+        display: block;
+        width: 100%;
+    }
+    .blueprint-card button:hover {
+        background-color: rgba(167, 139, 250, 0.05);
+    }
+    .dark .blueprint-card button:hover {
+        background-color: rgba(167, 139, 250, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Reveal on scroll logic with stagger
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.classList.add('active');
+                    // Animate stats if it's the stats section
+                    if (entry.target.querySelector('.stat-number')) {
+                        animateStats(entry.target);
+                    }
+                }, index * 100); // Stagger by 100ms
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Function to animate stats counting up
+    function animateStats(section) {
+        const statElements = section.querySelectorAll('.stat-number');
+        statElements.forEach(el => {
+            const text = el.textContent.replace(/,/g, '');
+            const target = parseFloat(text);
+            if (isNaN(target)) return; // Skip non-numeric like "<0.8s"
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    el.textContent = target % 1 === 0 ? target.toLocaleString() : target.toFixed(1) + (text.includes('%') ? '%' : '');
+                    clearInterval(timer);
+                } else {
+                    const display = Math.floor(current);
+                    el.textContent = display.toLocaleString() + (text.includes('%') ? '%' : '');
+                }
+            }, 20);
+        });
+    }
+
+    // Human-correcting typing animation
+    const textElement = document.getElementById('typing-text');
+    const phrases = [
+        "Understood.",
+        "Refined.",
+        "Humanized."
+    ];
+    
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let typingSpeed = 100;
+    let typingComplete = false;
+
+    function type() {
+        if (typingComplete) return; // Stop if complete
+        
+        const currentPhrase = phrases[phraseIndex];
+        
+        if (isDeleting) {
+            textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+            charIndex--;
+            typingSpeed = 50;
+        } else {
+            textElement.textContent = currentPhrase.substring(0, charIndex + 1);
+            charIndex++;
+            typingSpeed = 150;
+        }
+
+        if (!isDeleting && charIndex === currentPhrase.length) {
+            isDeleting = true;
+            typingSpeed = 2000; // Pause at end
+        } else if (isDeleting && charIndex === 0) {
+            if (phraseIndex < phrases.length - 1) {
+                isDeleting = false;
+                phraseIndex++;
+                typingSpeed = 1000;
+            } else {
+                // Stop at the last phrase and keep it visible
+                typingComplete = true;
+                isDeleting = false;
+                phraseIndex = phrases.length - 1;
+                textElement.textContent = phrases[phraseIndex];
+                return;
+            }
+        }
+
+        setTimeout(type, typingSpeed);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(type, 1000);
+        // Hide loading screen after a short delay
+        setTimeout(() => {
+            document.getElementById('loading-screen').style.display = 'none';
+        }, 500);
+
+        // Parallax effect for particles
+        const parallaxContainer = document.querySelector('.parallax-container');
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            parallaxContainer.style.transform = `translateY(${rate}px)`;
+        });
+
+        // Mouse tracking for card hover effect
+        document.querySelectorAll('.blueprint-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    });
+</script>
+{% endblock %}

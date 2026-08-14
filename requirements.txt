@@ -1,0 +1,43 @@
+# Flask and Web Framework
+Flask>=3.0.0
+Flask-SQLAlchemy>=3.1.1
+Flask-Login>=0.6.3
+Flask-WTF>=1.2.1
+Flask-CORS>=4.0.0
+Werkzeug>=3.0.1
+gunicorn>=21.2.0
+
+# Database
+SQLAlchemy>=2.0.35
+cryptography>=41.0.7
+
+# PDF Processing
+pdfplumber>=0.10.3
+PyMuPDF>=1.24.12
+pdf2image>=1.17.0
+
+# NLP and AI
+spacy>=3.8.7
+transformers>=4.45.0
+sentence-transformers>=3.0.0
+torch>=2.5.0
+scikit-learn>=1.5.0
+
+# Text Processing
+unicodedata2>=15.1.0
+ftfy>=6.2.0
+regex>=2024.9.11
+chardet>=5.2.0
+
+# Utilities
+python-dotenv>=1.0.0
+Pillow>=11.0.0
+numpy>=2.0.0
+pandas>=2.2.3
+
+# Form Validation
+WTForms>=3.1.1
+email-validator>=2.2.0
+
+# Export
+python-dateutil>=2.9.0

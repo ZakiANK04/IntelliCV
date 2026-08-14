@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}413 - File Too Large | IntelliCV{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-20 text-center">
+    <div class="text-9xl font-bold text-gray-200 mb-4">413</div>
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">File Too Large</h1>
+    <p class="text-gray-600 mb-8">The file you uploaded exceeds the maximum size limit of 16MB.</p>
+    <a href="{{ url_for('main.upload') }}" class="gradient-bg text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-all">
+        <i class="fas fa-upload mr-2"></i>Try Again
+    </a>
+</div>
+{% endblock %}
