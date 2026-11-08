@@ -166,9 +166,10 @@ class PDFExtractor:
         # Step 4: Remove control characters except newlines
         text = ''.join(char for char in text if char == '\n' or char == '\r' or not unicodedata.category(char).startswith('C'))
         
-        # Step 5: Fix broken words (letters separated by spaces)
-        # Pattern: single letter followed by space and another single letter
-        text = re.sub(r'(?<=[a-zA-Z])\s(?=[a-zA-Z]\s[a-zA-Z])', '', text)
+        # Step 5: Fix letter-spaced words ("J a v a" -> "Java").
+        # Only runs of 3+ single letters separated by single spaces, never across a newline,
+        # so ordinary one-letter words ("a", "I", "A B testing") are left alone.
+        text = re.sub(r'\b(?:[A-Za-z] ){2,}[A-Za-z]\b', lambda m: m.group(0).replace(' ', ''), text)
         
         # Step 6: Fix multiple spaces
         text = re.sub(r' +', ' ', text)

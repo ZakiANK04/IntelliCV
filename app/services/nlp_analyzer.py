@@ -4,6 +4,7 @@ Handles section detection, entity extraction, and semantic analysis
 """
 import re
 import logging
+from datetime import date
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 
@@ -608,25 +609,16 @@ class NLPAnalyzer:
         ]
     }
     
-    # Experience level indicators
+    # Experience level keywords: the fallback when neither a stated "N years of experience" nor
+    # dated work ranges give a number. Checked in this order (senior first), whole words only,
+    # in the first EXPERIENCE_KEYWORD_SCAN_CHARS characters (name, title, summary).
     EXPERIENCE_INDICATORS = {
-        'fresher': {
-            'keywords': ['fresher', 'fresh graduate', 'entry level', 'graduate', 'recent graduate', 'no experience'],
-            'years': (0, 1)
-        },
-        'junior': {
-            'keywords': ['junior', 'associate', '1 year', '2 years', 'trainee'],
-            'years': (1, 3)
-        },
-        'mid_level': {
-            'keywords': ['mid level', 'intermediate', '3 years', '4 years', '5 years'],
-            'years': (3, 6)
-        },
-        'senior': {
-            'keywords': ['senior', 'lead', 'principal', 'architect', 'manager', '6+ years', '7 years', '8 years', '10 years'],
-            'years': (6, 20)
-        }
+        'Senior': ['senior', 'lead', 'principal', 'architect', 'manager', '6+ years', '7 years', '8 years', '10 years'],
+        'Mid-Level': ['mid level', 'intermediate', '3 years', '4 years', '5 years'],
+        'Junior': ['junior', 'associate', '1 year', '2 years', 'trainee'],
+        'Fresher': ['fresher', 'fresh graduate', 'entry level', 'graduate', 'recent graduate', 'no experience'],
     }
+    EXPERIENCE_KEYWORD_SCAN_CHARS = 500
     
     def __init__(self):
         self.nlp = None
@@ -1052,46 +1044,71 @@ class NLPAnalyzer:
         return "General"
     
     def _detect_experience_level(self, text: str, sections: Dict[str, SectionResult]) -> str:
-        """Detect experience level based on content analysis"""
-        # Check for explicit keywords
-        for level, indicators in self.EXPERIENCE_INDICATORS.items():
-            for keyword in indicators['keywords']:
-                if keyword in text:
-                    return level.replace('_', ' ').title()
-        
-        # Analyze work experience section for years
+        """Detect experience level. Returns one of Fresher, Junior, Mid-Level, Senior, Unknown.
+
+        Signals, first one that gives an answer wins:
+        1. Stated years ("8+ years of experience"), the largest one in the CV.
+        2. Years covered by dated ranges in the work section ("2019 - Present").
+        3. Whole-word keywords near the top of the CV, senior first.
+        4. A work or education section with nothing dated: Fresher.
+        """
+        text = text.lower()
+
+        stated = [int(n) for n in re.findall(
+            r'\b(\d{1,2})\s*\+?\s*years?\s+(?:of\s+)?(?:[a-z-]+\s+){0,2}?experience\b', text)]
+        if stated:
+            return self._level_from_years(max(stated))
+
         work_section = sections.get('work_experience')
         if work_section and work_section.detected:
-            content = work_section.content.lower()
-            
-            # Count year ranges (rough estimate of experience)
-            year_pattern = r'(\d{4})\s*[-–]\s*(?:(\d{4})|present|current)'
-            matches = re.findall(year_pattern, content, re.IGNORECASE)
-            
-            total_years = 0
-            current_year = 2024
-            
-            for start_year, end_year in matches:
-                start = int(start_year)
-                end = current_year if not end_year else int(end_year)
-                total_years += max(0, end - start)
-            
-            if total_years == 0:
-                return "Fresher"
-            elif total_years <= 2:
-                return "Junior"
-            elif total_years <= 5:
-                return "Mid-Level"
-            else:
-                return "Senior"
-        
-        # Check education for fresher indicators
+            years = self._years_from_date_ranges(work_section.content.lower())
+            if years > 0:
+                return self._level_from_years(years)
+
+        head = text[:self.EXPERIENCE_KEYWORD_SCAN_CHARS]
+        for level, keywords in self.EXPERIENCE_INDICATORS.items():
+            for keyword in keywords:
+                pattern = r'\b' + re.escape(keyword).replace(r'\ ', r'[\s-]+') + r'(?!\w)'
+                if re.search(pattern, head):
+                    return level
+
         edu_section = sections.get('education')
-        if edu_section and edu_section.detected:
-            if not work_section or not work_section.detected:
-                return "Fresher"
-        
+        if (work_section and work_section.detected) or (edu_section and edu_section.detected):
+            return "Fresher"
+
         return "Unknown"
+
+    @staticmethod
+    def _level_from_years(years: int) -> str:
+        if years < 1:
+            return "Fresher"
+        if years <= 2:
+            return "Junior"
+        if years <= 5:
+            return "Mid-Level"
+        return "Senior"
+
+    @staticmethod
+    def _years_from_date_ranges(text: str) -> int:
+        """Years covered by 'YYYY - YYYY|present|current|now' ranges; overlapping ranges count once."""
+        current_year = date.today().year
+        spans = []
+        for start, end in re.findall(
+                r'\b((?:19|20)\d{2})\s*(?:-|–|—|to)\s*((?:19|20)\d{2}|present|current|now)\b', text):
+            start = int(start)
+            end = current_year if not end[0].isdigit() else int(end)
+            end = min(end, current_year)
+            if end > start:
+                spans.append((start, end))
+
+        total, covered_to = 0, None
+        for start, end in sorted(spans):
+            if covered_to is not None and start < covered_to:
+                start = covered_to
+            if end > start:
+                total += end - start
+                covered_to = end
+        return total
     
     def _calculate_scores(self, text: str, result: AnalysisResult) -> Dict[str, float]:
         """Calculate all scores for the CV"""
@@ -1135,14 +1152,14 @@ class NLPAnalyzer:
         scores['structure'] = min(100, scores['structure'] + avg_quality * 2)
         
         # Career alignment score (15%)
-        if result.career_field != "General IT":
-            scores['career'] = 70
-            # Bonus if skills match career field
-            field_keywords = self.CAREER_FIELDS.get(result.career_field, [])
-            matching_skills = sum(1 for s in result.skills_found if any(k in s.lower() for k in field_keywords))
-            scores['career'] = min(100, scores['career'] + matching_skills * 5)
+        field_info = self.CAREER_FIELDS.get(result.career_field)
+        if field_info:
+            # 70 for a detected field, +5 per extracted skill listed for that field
+            field_keywords = set(field_info['job_titles'] + field_info['primary'] + field_info['secondary'])
+            matching_skills = sum(1 for s in result.skills_found if s.lower() in field_keywords)
+            scores['career'] = min(100, 70 + matching_skills * 5)
         else:
-            scores['career'] = 50
+            scores['career'] = 50  # "General": no field detected
         
         # Readability score (15%)
         word_count = len(text.split())
@@ -1195,7 +1212,7 @@ class NLPAnalyzer:
             if section.detected and section.quality_score >= 8:
                 strengths.append(f"Excellent {name.replace('_', ' ')} section")
         
-        if result.career_field != "General IT":
+        if result.career_field != "General":
             strengths.append(f"Clear career focus in {result.career_field}")
         
         if result.overall_score >= 80:
