@@ -81,7 +81,7 @@ ACHIEVEMENTS
         "experience_level": "Senior",  # System should detect "Senior" from 8+ years experience
         "career_field": "Information Technology",
         "min_score": 70,
-        "max_score": 95,
+        "max_score": 100,  # was 95; raised 2026-11-08 when career and experience scoring were fixed
         "required_sections": ["professional_summary", "work_experience", "education", "skills"],
         "required_skills": ["python", "javascript", "django", "react", "aws", "docker"],
         "has_certifications": True,
@@ -232,7 +232,7 @@ ACHIEVEMENTS
         "experience_level": "Mid-Level",  # 5 years experience (2018-present)
         "career_field": "Marketing",
         "min_score": 65,
-        "max_score": 85,
+        "max_score": 95,  # was 85; raised 2026-11-08 (Mid-Level now scores 80 base, career no longer fixed at 70)
         "required_sections": ["professional_summary", "work_experience", "education", "skills"],
         "required_skills": ["seo", "digital marketing", "google analytics", "social media"],
         "has_certifications": True,
@@ -309,7 +309,7 @@ ACHIEVEMENTS
         "experience_level": "Senior",  # 6+ years nursing experience
         "career_field": "Healthcare",
         "min_score": 70,
-        "max_score": 90,
+        "max_score": 95,  # was 90; raised 2026-11-08 (Senior now detected, career no longer fixed at 70)
         "required_sections": ["professional_summary", "work_experience", "education"],
         "required_skills": ["patient care", "nursing"],
         "has_certifications": True,
@@ -424,7 +424,7 @@ Kaggle Competitions
         "experience_level": "Mid-Level",  # 4 years ML experience (2020-present)
         "career_field": "Machine Learning",
         "min_score": 75,
-        "max_score": 95,
+        "max_score": 100,  # was 95; raised 2026-11-08 (Mid-Level now scores 80 base, career no longer fixed at 70)
         "required_sections": ["professional_summary", "work_experience", "education", "skills"],
         "required_skills": ["python", "tensorflow", "pytorch", "machine learning", "deep learning"],
         "has_certifications": True,
@@ -500,7 +500,7 @@ ACHIEVEMENTS
         "experience_level": "Senior",  # 7+ years accounting experience
         "career_field": "Accountant",
         "min_score": 70,
-        "max_score": 90,
+        "max_score": 95,  # was 90; raised 2026-11-08 (Senior now detected, career no longer fixed at 70)
         "required_sections": ["professional_summary", "work_experience", "education"],
         "required_skills": ["accounting", "gaap", "tax", "excel"],
         "has_certifications": True,
