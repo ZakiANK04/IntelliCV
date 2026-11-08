@@ -70,7 +70,7 @@ Plain `unittest`, no pytest config.
 .venv/Scripts/python -m unittest discover -s tests -p "test_*.py"
 ```
 
-2026-11-08: **80 tests, all pass, ~50 s** (most of it is spaCy being loaded by several classes).
+2026-11-08: **83 tests, all pass, ~50 s** (most of it is spaCy being loaded by several classes).
 
 | File | Covers |
 |---|---|

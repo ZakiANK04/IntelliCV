@@ -109,6 +109,30 @@ class TestSeniorityDetection(unittest.TestCase):
         )
         self.assertEqual(self.analyzer.analyze(text).experience_level, "Unknown")
 
+    def test_overlapping_ranges_are_counted_once(self):
+        # 2018-2021 and 2019-2022 cover 4 years. Summing them gives 6, which would be Senior.
+        text = (
+            "ALEX DOE\nData Engineer\n\n"
+            "WORK EXPERIENCE\n"
+            "Data Engineer | Acme Corp | 2018 - 2021\n"
+            "• Built batch pipelines in Python\n"
+            "Contract Data Engineer | Beta Ltd | 2019 - 2022\n"
+            "• Migrated reports to the cloud warehouse\n"
+        )
+        self.assertEqual(self.analyzer._years_from_date_ranges(text.lower()), 4)
+        self.assertEqual(self.analyzer.analyze(text).experience_level, "Mid-Level")
+
+    def test_overlap_with_present_counts_from_earliest_start(self):
+        this_year = datetime.date.today().year
+        text = "2018 - 2022 data analyst\n2020 - present data engineer"
+        self.assertEqual(self.analyzer._years_from_date_ranges(text), this_year - 2018)
+
+    def test_nested_and_disjoint_ranges(self):
+        nested = "2015 - 2023 accountant\n2017 - 2019 part-time tutor"
+        self.assertEqual(self.analyzer._years_from_date_ranges(nested), 8)
+        disjoint = "2010 - 2012 cashier\n2015 - 2016 clerk"
+        self.assertEqual(self.analyzer._years_from_date_ranges(disjoint), 3)
+
     def test_samples_detect_expected_level(self):
         for name, sample in ALL_SAMPLE_CVS.items():
             with self.subTest(cv=name):
