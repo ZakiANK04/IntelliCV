@@ -158,5 +158,7 @@ tests/reports/*.json
 brain/
 *.md
 !README.md
+!CLAUDE.md
+!docs/*.md
 deploy.sh
 docker-compose.yml
