@@ -48,8 +48,12 @@ One named, explainable check that contributes to a Quality Score or Fit Score.
 _Avoid_: Metric, factor, sub-score (a sub-score may group several measures)
 
 **Career Field**:
-A category in IntelliCV's occupation taxonomy that a CV can be classified into or targeted at.
+A category in IntelliCV's occupation taxonomy, grouping related occupations, that a CV can be classified into or targeted at. An Analysis has one primary Career Field and up to two secondary ones. Being classified into a Career Field never makes it the Target.
 _Avoid_: Career category, domain, industry, job title
+
+**General**:
+The Career Field an Analysis gets when no real Career Field fits. It is never a secondary field and never a Target.
+_Avoid_: Other, unknown, uncategorised
 
 **Advice**:
 Strengths, weaknesses and recommendations attached to an Analysis, written in the UI Language.
